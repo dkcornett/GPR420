@@ -90,8 +90,6 @@ float AFPSCube::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, A
 	if (CurrentHealth <= 0)			//using health to determine when cube should be destroyed instead of scale like in tutorial code
 	{
 		OnDeath.Broadcast();
-		
-		
 	}
 
 	return 0.0f;
@@ -100,5 +98,6 @@ float AFPSCube::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, A
 void AFPSCube::SpawnExplosion()
 {
 	AActor* DeathEffect = GetWorld()->SpawnActor<AActor>(BombClass, GetActorLocation(), GetActorRotation());
+	AActor* const temp = DeathEffect->GetWorldSettings();
+	temp->SetActorScale3D(FVector(scale));
 }
-

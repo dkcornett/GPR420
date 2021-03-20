@@ -59,6 +59,9 @@ protected:
 	// The actors to spawn on death
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AFPSCube> SpawnedActor;
+
+	//Delegate for scale of explosion
+	UPROPERTY(EditAnywhere) float scale = 0.5f;
 	
 	UFUNCTION()
 	virtual void SpawnExplosion();		//make explosion actor when cube dies

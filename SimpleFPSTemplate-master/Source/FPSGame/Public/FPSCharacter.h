@@ -76,8 +76,11 @@ protected:
 	/** Charges the charged projectile. */
 	void Charge();
 
+	//Timer delegate stuff from video
+	void timerDelegate();
+
 	/** Fires the charged projectile. */
-	void FireCharged();
+	void FireCharged(float scale);
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

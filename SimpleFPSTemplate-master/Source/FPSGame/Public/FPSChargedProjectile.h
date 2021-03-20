@@ -34,5 +34,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AmountCharged;
 
-	
+	UPROPERTY(EditAnywhere) float scale;
 };

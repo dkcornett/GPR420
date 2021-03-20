@@ -48,7 +48,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 	PlayerInputComponent->BindAction("Charge", IE_Pressed, this, &AFPSCharacter::Charge);
-	PlayerInputComponent->BindAction("Charge", IE_Released, this, &AFPSCharacter::FireCharged);
+	PlayerInputComponent->BindAction("Charge", IE_Released, this, &AFPSCharacter::timerDelegate);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
@@ -129,7 +129,21 @@ void AFPSCharacter::Charge()
 	}
 }
 
-void AFPSCharacter::FireCharged()
+void AFPSCharacter::timerDelegate()
+{
+	FTimerHandle timer;
+	FTimerDelegate timerDel;
+	float randomScale = FMath::RandRange(1.0f, 5.0f);
+	timerDel.BindUFunction(this, FName("FireCharged"), randomScale);
+	UWorld* const world = GetWorld();
+
+	if (world != nullptr)
+	{
+		world->GetTimerManager().SetTimer(timer, timerDel, 3.0f, false);
+	}
+}
+
+void AFPSCharacter::FireCharged(float scale)
 {
 	//largely derived from Fire() but needs other class as input
 	// try and fire a projectile
@@ -151,7 +165,10 @@ void AFPSCharacter::FireCharged()
 
 			// spawn the projectile at the muzzle
 			ChargedProjectile = GetWorld()->SpawnActor<AFPSChargedProjectile>(ChargedProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
-
+			
+			//give it the scale based on the delegate
+			ChargedProjectile->scale = scale;
+			
 			ChargedProjectile->ChangeCharge(AmountCharged);
 
 			// try and play the sound if specified
