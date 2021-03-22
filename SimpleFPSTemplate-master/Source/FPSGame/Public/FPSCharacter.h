@@ -71,22 +71,29 @@ public:
 protected:
 	
 	/** Fires a projectile. */
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void Fire();
 
 	/** Charges the charged projectile. */
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void Charge();
 
 	//Timer delegate stuff from video
 	void timerDelegate();
 
 	/** Fires the charged projectile. */
+	//fixed function finding bug from this https://answers.unrealengine.com/questions/865226/bindufunction-failed-to-find-function.html?sort=oldest 
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void FireCharged(float scale);
 
 	/** Handles moving forward/backward */
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void MoveForward(float Val);
 
 	/** Handles strafing movement, left and right */
+	UFUNCTION(BlueprintCallable, CallInEditor)
 	void MoveRight(float Val);
+
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 

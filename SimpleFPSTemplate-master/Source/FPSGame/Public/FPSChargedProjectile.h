@@ -31,8 +31,8 @@ public:
 	UFUNCTION()
 	void ChangeCharge(float NewCharge);
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float AmountCharged;
 
-	UPROPERTY(EditAnywhere) float scale;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere) float scale;
 };
