@@ -50,6 +50,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	USoundBase* FireSound;
 
+	/** Particle system for the explosion */
+//	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
+//		UParticleSystem* ExplosionEffect;
+
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	UAnimSequence* FireAnimation;
