@@ -2,6 +2,7 @@
 
 
 #include "FPSCube.h"
+#include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/EngineTypes.h"
 
@@ -52,6 +53,10 @@ void AFPSCube::DeathResponse()
 			newCube->SetActorScale3D(scale / 2.0f);
 
 			newCube->SetActorLocation(pos + i * 100);
+
+			newCube->scaleExplosion = scaleExplosion;
+			FString scaleString = FString::Printf(TEXT("Scale: %s"), *FString::SanitizeFloat(scaleExplosion));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, scaleString);
 		}
 	}
 
@@ -90,6 +95,9 @@ float AFPSCube::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, A
 	if (CurrentHealth <= 0)			//using health to determine when cube should be destroyed instead of scale like in tutorial code
 	{
 		OnDeath.Broadcast();
+		FString scaleString = FString::Printf(TEXT("----------------------------\n"));
+		scaleString += FString::Printf(TEXT("Scale: %s"), *FString::SanitizeFloat(scaleExplosion));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, scaleString);
 	}
 
 	return 0.0f;
@@ -98,6 +106,8 @@ float AFPSCube::TakeDamage(float DamageTaken, FDamageEvent const& DamageEvent, A
 void AFPSCube::SpawnExplosion()
 {
 	AActor* DeathEffect = GetWorld()->SpawnActor<AActor>(BombClass, GetActorLocation(), GetActorRotation());
-	AActor* const temp = DeathEffect->GetWorldSettings();
-	temp->SetActorScale3D(FVector(scale));
+	FString scaleString = FString::Printf(TEXT("Scale: %s"), *FString::SanitizeFloat(scaleExplosion));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, scaleString);
+	int modifier = FMath::RandRange(50.0f, 100.0f);
+	DeathEffect->SetActorScale3D(FVector(scaleExplosion * modifier));
 }

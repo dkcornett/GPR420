@@ -48,7 +48,8 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 	PlayerInputComponent->BindAction("Charge", IE_Pressed, this, &AFPSCharacter::Charge);
-	PlayerInputComponent->BindAction("Charge", IE_Released, this, &AFPSCharacter::timerDelegate);
+	PlayerInputComponent->BindAction("Charge", IE_Pressed, this, &AFPSCharacter::timerDelegate);
+	PlayerInputComponent->BindAction("Charge", IE_Released, this, &AFPSCharacter::FireCharged);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
@@ -135,7 +136,10 @@ void AFPSCharacter::timerDelegate()
 	FTimerHandle timer;
 	FTimerDelegate timerDel;
 	float randomScale = FMath::RandRange(1.0f, 5.0f);
-	timerDel.BindUFunction(this, FName("FireCharged"), randomScale);
+	timerDel.BindUFunction(this, FName("FireCharged"));
+	scale = randomScale;
+	FString scaleString = FString::Printf(TEXT("Scale in Character: %s"), *FString::SanitizeFloat(scale));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, scaleString);
 	UWorld* const world = GetWorld();
 
 	if (world != nullptr)
@@ -144,7 +148,7 @@ void AFPSCharacter::timerDelegate()
 	}
 }
 
-void AFPSCharacter::FireCharged(float scale)
+void AFPSCharacter::FireCharged()
 {
 	//largely derived from Fire() but needs other class as input
 	// try and fire a projectile

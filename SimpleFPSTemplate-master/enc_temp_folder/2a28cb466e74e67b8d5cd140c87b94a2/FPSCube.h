@@ -46,7 +46,7 @@ public:
 	TSubclassOf<AFPSChargedProjectile> ChargedProjectileClass;
 
 	//Delegate for scale of explosion
-	UPROPERTY(EditAnywhere) float scaleExplosion = 0.0f;
+	UPROPERTY(EditAnywhere) float scaleExplosion = 0.5f;
 
 	//referenced Cameron's Step 2 branch: death delegate is called when health <= 0.0f
 	FDeathDelegate OnDeath;
