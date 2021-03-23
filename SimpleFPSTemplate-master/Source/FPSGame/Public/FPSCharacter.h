@@ -88,7 +88,7 @@ protected:
 	/** Fires the charged projectile. */
 	//fixed function finding bug from this https://answers.unrealengine.com/questions/865226/bindufunction-failed-to-find-function.html?sort=oldest 
 	UFUNCTION(BlueprintCallable, CallInEditor)
-	void FireCharged(float scale);
+	void FireCharged();
 
 	/** Handles moving forward/backward */
 	UFUNCTION(BlueprintCallable, CallInEditor)
@@ -104,6 +104,8 @@ protected:
 	bool IsCharging;
 
 	bool IsCoolDown;
+
+	float scale;
 
 	//const FTimer CoolDownTimer;
 

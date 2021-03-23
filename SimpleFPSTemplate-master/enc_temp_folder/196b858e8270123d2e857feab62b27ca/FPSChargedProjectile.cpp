@@ -1,0 +1,38 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "FPSChargedProjectile.h"
+#include "FPSCube.h"
+#include "Kismet/GameplayStatics.h"
+
+
+
+void AFPSChargedProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	// Only add impulse and destroy projectile if we hit a physics
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
+	{
+		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+
+		if (OtherActor->IsA<AFPSCube>())
+		{
+			OtherActor->TakeDamage(100.0f * AmountCharged, FDamageEvent::FDamageEvent(), GetWorld()->GetFirstPlayerController(), this);
+			AFPSCube* temp = Cast<AFPSCube>(OtherActor);
+			temp->scaleExplosion = scale;
+
+			//OtherActor->ApplyRadialDamage(200.0f, );
+		}
+
+		Destroy();
+	}
+}
+
+/*
+AFPSChargedProjectile::AFPSChargedProjectile(float StartCharge)
+{
+	AmountCharged = StartCharge;
+}*/
+
+void AFPSChargedProjectile::ChangeCharge(float NewCharge)
+{
+	AmountCharged = NewCharge;
+}

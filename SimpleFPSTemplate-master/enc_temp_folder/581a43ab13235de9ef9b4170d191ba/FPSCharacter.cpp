@@ -30,11 +30,13 @@ AFPSCharacter::AFPSCharacter()
 	GunMeshComponent->CastShadow = false;
 	GunMeshComponent->SetupAttachment(Mesh1PComponent, "GripPoint");
 
-	//starting val for amountcharged
+	//starting val for amountcharged and timetocooldown
 	AmountCharged = 0.1f;
+	TimeToCoolDown = MaxCooldown;
 
-	//starting val for isCharging
+	//starting val for isCharging and IsCoolDown
 	IsCharging = false;
+	IsCoolDown = false;
 }
 
 
@@ -46,7 +48,9 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 	PlayerInputComponent->BindAction("Charge", IE_Pressed, this, &AFPSCharacter::Charge);
+	PlayerInputComponent->BindAction("Charge", IE_Pressed, this, &AFPSCharacter::timerDelegate);
 	PlayerInputComponent->BindAction("Charge", IE_Released, this, &AFPSCharacter::FireCharged);
+
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFPSCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFPSCharacter::MoveRight);
@@ -59,11 +63,24 @@ void AFPSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(IsCharging == true)
+	if(IsCharging)
 	{ 
-		if (AmountCharged < 1.0f)
+		if (AmountCharged <= ChargeTime)
 		{
-			AmountCharged += 0.1f;
+			AmountCharged += DeltaTime;
+		}
+	}
+
+	if (IsCoolDown)
+	{
+		if(TimeToCoolDown > 0.0f)
+		{ 
+			TimeToCoolDown -= DeltaTime;
+		}
+		else
+		{
+			TimeToCoolDown = MaxCooldown;
+			IsCoolDown = false;
 		}
 	}
 
@@ -108,8 +125,25 @@ void AFPSCharacter::Fire()
 
 void AFPSCharacter::Charge()
 {
-	IsCharging = true;
+	if (!IsCoolDown)
+	{
+		IsCharging = true;
+	}
+}
 
+void AFPSCharacter::timerDelegate()
+{
+	FTimerHandle timer;
+	FTimerDelegate timerDel;
+	float randomScale = FMath::RandRange(1.0f, 5.0f);
+	timerDel.BindUFunction(this, FName("FireCharged"));
+	scale = randomScale;
+	UWorld* const world = GetWorld();
+
+	if (world != nullptr)
+	{
+		world->GetTimerManager().SetTimer(timer, timerDel, 3.0f, false);
+	}
 }
 
 void AFPSCharacter::FireCharged()
@@ -117,43 +151,56 @@ void AFPSCharacter::FireCharged()
 	//largely derived from Fire() but needs other class as input
 	// try and fire a projectile
 	if (ChargedProjectileClass)
-	{
-		// Grabs location from the mesh that must have a socket called "Muzzle" in his skeleton
-		FVector MuzzleLocation = GunMeshComponent->GetSocketLocation("Muzzle");
-		// Use controller rotation which is our view direction in first person
-		FRotator MuzzleRotation = GetControlRotation();
-
-		//Set Spawn Collision Handling Override
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-		//
-		AFPSChargedProjectile* ChargedProjectile;
-
-		// spawn the projectile at the muzzle
-		ChargedProjectile = GetWorld()->SpawnActor<AFPSChargedProjectile>(ChargedProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
-
-		ChargedProjectile->ChangeCharge(AmountCharged);
-
-		// try and play the sound if specified
-		if (FireSound)
+	{ 
+		if (!IsCoolDown)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-		}
+			// Grabs location from the mesh that must have a socket called "Muzzle" in his skeleton
+			FVector MuzzleLocation = GunMeshComponent->GetSocketLocation("Muzzle");
+			// Use controller rotation which is our view direction in first person
+			FRotator MuzzleRotation = GetControlRotation();
 
-		// try and play a firing animation if specified
-		if (FireAnimation)
-		{
-			// Get the animation object for the arms mesh
-			UAnimInstance* AnimInstance = Mesh1PComponent->GetAnimInstance();
-			if (AnimInstance)
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			//
+			AFPSChargedProjectile* ChargedProjectile;
+
+			// spawn the projectile at the muzzle
+			ChargedProjectile = GetWorld()->SpawnActor<AFPSChargedProjectile>(ChargedProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
+			
+			//give it the scale based on the delegate
+			ChargedProjectile->scale = scale;
+			
+			ChargedProjectile->ChangeCharge(AmountCharged);
+
+			// try and play the sound if specified
+			if (FireSound)
 			{
-				AnimInstance->PlaySlotAnimationAsDynamicMontage(FireAnimation, "Arms", 0.0f);
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 			}
+
+			// try and play a firing animation if specified
+			if (FireAnimation)
+			{
+				// Get the animation object for the arms mesh
+				UAnimInstance* AnimInstance = Mesh1PComponent->GetAnimInstance();
+				if (AnimInstance)
+				{
+					AnimInstance->PlaySlotAnimationAsDynamicMontage(FireAnimation, "Arms", 0.0f);
+				}
+			}
+
+
+			//reset variables
+			IsCharging = false;
+			AmountCharged = 0.0f;
+
+			//start cooldown timer
+			IsCoolDown = true;
+
 		}
 	}
-
-	IsCharging = false;
 }
 
 void AFPSCharacter::MoveForward(float Value)

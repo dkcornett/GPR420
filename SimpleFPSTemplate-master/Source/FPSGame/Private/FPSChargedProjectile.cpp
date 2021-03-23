@@ -16,6 +16,11 @@ void AFPSChargedProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
 		if (OtherActor->IsA<AFPSCube>())
 		{
 			OtherActor->TakeDamage(100.0f * AmountCharged, FDamageEvent::FDamageEvent(), GetWorld()->GetFirstPlayerController(), this);
+			AFPSCube* temp = Cast<AFPSCube>(OtherActor);
+			temp->scaleExplosion = scale;
+
+			FString scaleString = FString::Printf(TEXT("Scale in charged: %s"), *FString::SanitizeFloat(temp->scaleExplosion));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, scaleString);
 
 			//OtherActor->ApplyRadialDamage(200.0f, );
 		}
