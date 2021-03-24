@@ -43,7 +43,6 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 		if (OtherActor->IsA<AFPSCube>())
 		{
 			OtherActor->TakeDamage(25.0f, FDamageEvent::FDamageEvent(), GetWorld()->GetFirstPlayerController(), this);
-
 		}
 
 		Destroy();

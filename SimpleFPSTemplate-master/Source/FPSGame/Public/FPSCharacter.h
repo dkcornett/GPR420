@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Runtime/Online/HTTP/Public/Http.h"
 #include "TimerManager.h"
 #include "FPSCharacter.generated.h"
 
@@ -115,6 +116,15 @@ public:
 
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return CameraComponent; }
+
+	FHttpModule* Http;
+
+	/* The actual HTTP call */
+	UFUNCTION() void MyHttpCall();
+
+	/*Assign this function to call when the GET request processes sucessfully*/
+	void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
 
 };
 
