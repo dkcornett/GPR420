@@ -232,15 +232,15 @@ void AFPSCharacter::MoveRight(float Value)
 //referneced here for help with setting up the code https://www.davidykay.com/UE4-Hello-Http/
 void AFPSCharacter::MyHttpCall()
 {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
-	Request->OnProcessRequestComplete().BindUObject(this, &AFPSCharacter::OnResponseReceived);
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> connection = Http->CreateRequest();
+	connection->OnProcessRequestComplete().BindUObject(this, &AFPSCharacter::OnResponseReceived);
 
 	//url on which to process the request
-	Request->SetURL("insertURLHere");
-	Request->SetVerb("GET");
-	Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
-	Request->SetHeader("Content-Type", TEXT("application/json"));
-	Request->ProcessRequest();
+	connection->SetURL("insertURLHere");
+	connection->SetVerb("GET");
+	connection->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
+	connection->SetHeader("Content-Type", TEXT("application/json"));
+	connection->ProcessRequest();
 }
 
 //on successful http call, call this function
