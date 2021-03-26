@@ -70,7 +70,7 @@ void AFPSCharacter::Tick(float DeltaTime)
 	{ 
 		if (AmountCharged <= ChargeTime)
 		{
-			AmountCharged += DeltaTime;
+			AmountCharged += DeltaTime;	
 		}
 	}
 
@@ -236,7 +236,7 @@ void AFPSCharacter::MyHttpCall()
 	connection->OnProcessRequestComplete().BindUObject(this, &AFPSCharacter::OnResponseReceived);
 
 	//url on which to process the request
-	connection->SetURL("insertURLHere");
+	connection->SetURL("https://api.weather.gov/points/44.8,73.17");		//burlington international airport's latitude and longitude
 	connection->SetVerb("GET");
 	connection->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
 	connection->SetHeader("Content-Type", TEXT("application/json"));
@@ -260,5 +260,11 @@ void AFPSCharacter::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr
 
 		//Output it to the engine
 		GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Green, FString::FromInt(recievedInt));
+
+		//Set ChargeSpeed
 	}
+}
+
+void AFPSCharacter::SetChargeSpeed(float PrecipitationChance)
+{
 }

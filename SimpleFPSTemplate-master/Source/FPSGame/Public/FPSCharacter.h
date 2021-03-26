@@ -51,10 +51,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay")
 	USoundBase* FireSound;
 
-	/** Particle system for the explosion */
-//	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
-//		UParticleSystem* ExplosionEffect;
-
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	UAnimSequence* FireAnimation;
@@ -106,7 +102,12 @@ protected:
 
 	bool IsCoolDown;
 
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (ClampMin = "0.1", ClampMax = "1.0"))
 	float scale;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (ClampMin = "0.1", ClampMax = "1.0"))
+	float ChargeSpeed = 1.0f;
 
 	//const FTimer CoolDownTimer;
 
@@ -120,10 +121,15 @@ public:
 	FHttpModule* Http;
 
 	/* The actual HTTP call */
-	UFUNCTION() void MyHttpCall();
+	UFUNCTION() 
+	void MyHttpCall();
 
 	/*Assign this function to call when the GET request processes sucessfully*/
 	void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+	/*Function that takes precipitation from weather API and correlates charge speed accordingly*/
+	UFUNCTION()
+	void SetChargeSpeed(float PrecipitationChance);
 
 
 };
